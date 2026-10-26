@@ -6,7 +6,7 @@
 #include <transaction.h>
 
 #include <assert.h>
-#ifndef __aarch64__
+#if !defined(__aarch64__) && !defined(__powerpc64__)
 #include <xmmintrin.h>
 #endif
 
@@ -1486,6 +1486,8 @@ queue_pop_wait(queue_t* adata_q)
 		if (adata == NULL) {
 			#ifdef __aarch64__
 			__asm__ __volatile__("yield");
+			#elif defined(__powerpc64__)
+			__asm__ __volatile__("or 27,27,27" : : : "memory");
 			#else
 			_mm_pause();
 			#endif
